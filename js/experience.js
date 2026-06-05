@@ -22,7 +22,7 @@
 
         init: function () {
             if (this.music === null) {
-                this.music = this.createAudio(musicPath, 0.19, true);
+                this.music = this.createAudio(musicPath, 0.10, true);
                 this.footsteps = this.createAudio(footstepPath, 0.28, true);
                 this.crash = this.createAudio(crashPath, 0.7, false);
                 this.driving = this.createAudio(drivingPath, 0.68, true);
