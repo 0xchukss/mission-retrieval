@@ -8,8 +8,9 @@
     <head>
         <title>Mission Retrieval</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-        <script src="external/ThreeDebug.js"></script>
+        <script src="external/ThreeDebug.js?v=20260605-mobile1"></script>
         <script src="external/Stats.js"></script>
         <script src="external/Box2dWeb-2.1.a.3.js"></script>
         <script src="external/raw-loader.js"></script>
@@ -17,7 +18,7 @@
         <script src="external/DataView.js"></script>
 
         <script src="js/reader.js"></script>
-        <script src="js/core.js?v=20260605-exp4"></script>
+        <script src="js/core.js?v=20260605-exp5"></script>
         <script src="js/debug.js"></script>
         <script src="js/physics.js"></script>
         <script src="js/map.js"></script>
@@ -34,18 +35,24 @@
         <script src="js/missioncommands.js"></script>
         <script src="js/missionactions.js"></script>
         <script src="js/retrievalmissions.js?v=20260605-4"></script>
-        <script src="js/experience.js?v=20260605-exp10"></script>
+        <script src="js/experience.js?v=20260605-exp11"></script>
 
 
         <script>
             function startGame(){
                 
-                var stats = new Stats();
+                var stats;
+
+                stats = new Stats();
 
                 // Align top-left
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.left = '0px';
                 stats.domElement.style.top = '0px';
+
+                if (GTA.Experience && GTA.Experience.isPhoneMode()) {
+                    stats.domElement.style.display = 'none';
+                }
 
                 document.body.appendChild( stats.domElement );
 
@@ -70,6 +77,12 @@
                 margin:0;
                 padding:0;
                 background:#000;
+                width:100%;
+                height:100%;
+            }
+
+            canvas {
+                display:block;
             }
 
             #GTADebugPositionData {

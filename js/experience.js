@@ -269,6 +269,14 @@
         bootScreen: null,
         minBootDone: false,
         gameLoaded: false,
+        platformMode: "pc",
+        gameStarted: false,
+        mobileControls: null,
+        mobileControlsTimer: null,
+        landscapeBlocker: null,
+        orientationListenerReady: false,
+        startGameCallback: null,
+        pendingPhoneStart: false,
 
         boot: function (startGame) {
             var screen,
@@ -286,7 +294,11 @@
                 "<div class=\"bootShade\"></div>" +
                 "<div class=\"bootText\">" +
                     "<div class=\"bootTitle\">Mission Retrieval</div>" +
-                    "<div class=\"bootSmall\">Loading Adam into the city</div>" +
+                    "<div class=\"bootSmall\">Choose your platform to begin</div>" +
+                    "<div class=\"platformSelect\">" +
+                        "<button data-platform=\"pc\">PC</button>" +
+                        "<button data-platform=\"phone\">Phone</button>" +
+                    "</div>" +
                 "</div>";
 
             video = screen.getElementsByTagName("video")[0];
@@ -299,15 +311,178 @@
             content = screen.getElementsByClassName("bootText")[0];
             content.offsetHeight;
             content.className = "bootText show";
-
-            window.setTimeout(function () {
-                startGame();
-            }, 80);
+            this.bindPlatformButtons(screen, startGame);
+            this.createLandscapeBlocker();
 
             window.setTimeout(function () {
                 self.minBootDone = true;
                 self.finishBoot();
             }, 4000);
+        },
+
+        bindPlatformButtons: function (screen, startGame) {
+            var buttons = screen.getElementsByTagName("button"),
+                self = this,
+                i;
+
+            for (i = 0; i < buttons.length; i += 1) {
+                buttons[i].onclick = function () {
+                    self.selectPlatform(this.getAttribute("data-platform"), startGame);
+                };
+            }
+        },
+
+        selectPlatform: function (mode, startGame) {
+            var screen = this.bootScreen,
+                small;
+
+            if (this.gameStarted) {
+                return;
+            }
+
+            this.platformMode = mode === "phone" ? "phone" : "pc";
+            this.gameStarted = true;
+            this.applyPlatformClass();
+            GTA.Audio.unlock();
+            GTA.Audio.playMenu();
+
+            if (screen !== null) {
+                screen.className = "platformChosen";
+                small = screen.getElementsByClassName("bootSmall")[0];
+
+                if (small !== undefined) {
+                    small.innerHTML = this.isPhoneMode() ? "Loading phone controls" : "Loading PC controls";
+                }
+            }
+
+            if (this.isPhoneMode()) {
+                this.startPhoneMode(startGame);
+                return;
+            }
+
+            this.startSelectedGame(startGame);
+        },
+
+        applyPlatformClass: function () {
+            var body = document.body,
+                className = body.className.replace(/\bmissionPhoneMode\b/g, "").replace(/\bmissionPcMode\b/g, "");
+
+            body.className = className + (this.isPhoneMode() ? " missionPhoneMode" : " missionPcMode");
+        },
+
+        isPhoneMode: function () {
+            return this.platformMode === "phone";
+        },
+
+        startSelectedGame: function (startGame) {
+            window.setTimeout(function () {
+                startGame();
+            }, 80);
+        },
+
+        startPhoneMode: function (startGame) {
+            var self = this;
+
+            this.startGameCallback = startGame;
+            this.pendingPhoneStart = true;
+            this.bindOrientationListeners();
+            this.requestLandscapeLock();
+            this.updateLandscapeState();
+
+            window.setTimeout(function () {
+                self.updateLandscapeState();
+            }, 650);
+        },
+
+        bindOrientationListeners: function () {
+            var self = this,
+                update = function () {
+                    window.setTimeout(function () {
+                        self.updateLandscapeState();
+                    }, 120);
+                };
+
+            if (this.orientationListenerReady) {
+                return;
+            }
+
+            this.orientationListenerReady = true;
+            window.addEventListener("resize", update, false);
+            window.addEventListener("orientationchange", update, false);
+        },
+
+        requestLandscapeLock: function () {
+            var doc = document.documentElement,
+                requestFullscreen = doc.requestFullscreen ||
+                    doc.webkitRequestFullscreen ||
+                    doc.mozRequestFullScreen ||
+                    doc.msRequestFullscreen,
+                orientation = window.screen && window.screen.orientation ? window.screen.orientation : null,
+                fullscreenPromise;
+
+            if (requestFullscreen !== undefined &&
+                    (document.fullscreenElement === undefined || document.fullscreenElement === null)) {
+                try {
+                    fullscreenPromise = requestFullscreen.call(doc);
+
+                    if (fullscreenPromise && fullscreenPromise.catch !== undefined) {
+                        fullscreenPromise.catch(function () {});
+                    }
+                } catch (ignoreFullscreen) {}
+            }
+
+            if (orientation !== null && orientation.lock !== undefined) {
+                try {
+                    orientation.lock("landscape").catch(function () {});
+                } catch (ignoreLock) {}
+            }
+        },
+
+        isLandscape: function () {
+            var viewport = window.visualViewport;
+
+            return (viewport && viewport.width ? viewport.width : window.innerWidth) >=
+                (viewport && viewport.height ? viewport.height : window.innerHeight);
+        },
+
+        createLandscapeBlocker: function () {
+            var blocker;
+
+            if (this.landscapeBlocker !== null) {
+                return;
+            }
+
+            blocker = document.createElement("div");
+            blocker.id = "missionLandscapeBlocker";
+            blocker.innerHTML =
+                "<div class=\"landscapePanel\">" +
+                    "<div class=\"landscapeTitle\">Rotate Phone</div>" +
+                    "<div class=\"landscapeText\">Mission Retrieval phone mode is landscape only.</div>" +
+                "</div>";
+            document.body.appendChild(blocker);
+            this.landscapeBlocker = blocker;
+        },
+
+        updateLandscapeState: function () {
+            var isReady;
+
+            if (!this.isPhoneMode()) {
+                return;
+            }
+
+            this.createLandscapeBlocker();
+            isReady = this.isLandscape();
+            document.body.className = document.body.className.replace(/\bmissionPortraitRequired\b/g, "") +
+                (isReady ? "" : " missionPortraitRequired");
+
+            if (this.game !== null && this.game.resizeRenderer !== undefined) {
+                this.game.resizeRenderer();
+            }
+
+            if (isReady && this.pendingPhoneStart && this.startGameCallback !== null) {
+                this.pendingPhoneStart = false;
+                this.startSelectedGame(this.startGameCallback);
+            }
         },
 
         finishBoot: function () {
@@ -351,6 +526,23 @@
                 ".bootText.show{opacity:1;transform:translateY(0);}" +
                 ".bootTitle{font-size:42px;font-weight:bold;letter-spacing:0;}" +
                 ".bootSmall{font-size:13px;color:#a4ffb2;margin-top:8px;}" +
+                ".platformSelect{display:flex;gap:10px;margin-top:16px;}" +
+                ".platformSelect button{" +
+                    "height:40px;min-width:112px;border:1px solid rgba(109,255,133,.65);" +
+                    "background:rgba(1,8,12,.74);color:#e8ffed;font:bold 13px Arial;text-transform:uppercase;" +
+                    "box-shadow:0 0 18px rgba(31,255,91,.22);cursor:pointer;" +
+                "}" +
+                ".platformSelect button:hover{background:rgba(109,255,133,.2);}" +
+                "#missionBoot.platformChosen .platformSelect{display:none;}" +
+                "#missionLandscapeBlocker{" +
+                    "display:none;position:fixed;inset:0;z-index:60;background:#020608;color:#e8ffed;" +
+                    "font-family:Arial,Helvetica,sans-serif;text-transform:uppercase;text-align:center;" +
+                    "align-items:center;justify-content:center;padding:22px;" +
+                "}" +
+                "body.missionPortraitRequired #missionLandscapeBlocker{display:flex;}" +
+                ".landscapePanel{border:1px solid rgba(109,255,133,.62);padding:18px 20px;background:rgba(1,8,12,.78);box-shadow:0 0 28px rgba(31,255,91,.28);}" +
+                ".landscapeTitle{font-size:24px;font-weight:bold;text-shadow:0 0 16px #6dff85;}" +
+                ".landscapeText{font-size:12px;color:#a4ffb2;margin-top:8px;line-height:1.4;}" +
                 "#missionMenuButton{" +
                     "position:absolute;left:12px;bottom:12px;z-index:20;border:1px solid rgba(109,255,133,.55);" +
                     "background:rgba(1,8,12,.78);color:#dfffe6;padding:9px 13px;font:bold 12px Arial;" +
@@ -390,7 +582,39 @@
                     "background:rgba(1,8,12,.82);color:#e8ffed;text-align:center;font:bold 12px Arial;" +
                     "text-transform:uppercase;box-shadow:0 0 20px rgba(31,255,91,.2);pointer-events:none;" +
                 "}" +
-                "#missionGuidance .guideKeys{display:block;color:#a4ffb2;font:bold 11px Arial;margin-top:4px;}"
+                "#missionGuidance .guideKeys{display:block;color:#a4ffb2;font:bold 11px Arial;margin-top:4px;}" +
+                "body.missionPhoneMode #GTADebugPositionData,body.missionPhoneMode .stats{display:none;}" +
+                "body.missionPhoneMode #missionMenuButton{left:10px;bottom:calc(112px + env(safe-area-inset-bottom));padding:8px 11px;}" +
+                "body.missionPhoneMode #missionGuidance{" +
+                    "bottom:calc(108px + env(safe-area-inset-bottom));width:calc(100vw - 28px);min-width:0;" +
+                    "max-width:calc(100vw - 28px);font-size:11px;padding:9px 10px;" +
+                "}" +
+                "#missionTouchControls{display:none;font-family:Arial,Helvetica,sans-serif;}" +
+                "body.missionPhoneMode #missionTouchControls{display:block;}" +
+                "#missionTouchControls button{" +
+                    "pointer-events:auto;border:1px solid rgba(109,255,133,.65);background:rgba(1,8,12,.78);" +
+                    "color:#e8ffed;box-shadow:0 0 18px rgba(31,255,91,.24);font:bold 13px Arial;text-transform:uppercase;" +
+                    "touch-action:none;-webkit-user-select:none;user-select:none;" +
+                "}" +
+                "#missionTouchControls button:active{background:rgba(109,255,133,.26);}" +
+                ".touchSteer{position:fixed;left:12px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:10px;}" +
+                ".touchActions{position:fixed;right:12px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:9px;align-items:flex-end;}" +
+                ".touchRound{width:58px;height:58px;border-radius:50%;font-size:24px;}" +
+                ".touchPill{height:56px;min-width:66px;border-radius:28px;padding:0 15px;}" +
+                ".touchTall{height:68px;min-width:82px;border-radius:34px;}" +
+                "#missionTouchControls .carOnly{display:none;}" +
+                "#missionTouchControls.inVehicle .footOnly{display:none;}" +
+                "#missionTouchControls.inVehicle .carOnly{display:inline-block;}" +
+                "#missionTouchControls.inVehicle .touchActions{gap:7px;}" +
+                "@media (max-width:520px){" +
+                    ".bootText{left:20px;right:20px;bottom:28px;}" +
+                    ".bootTitle{font-size:32px;}" +
+                    ".platformSelect{flex-wrap:wrap;}" +
+                    ".platformSelect button{min-width:104px;}" +
+                    ".touchRound{width:54px;height:54px;}" +
+                    ".touchPill{height:52px;min-width:58px;padding:0 12px;font-size:11px;}" +
+                    ".touchTall{height:62px;min-width:74px;}" +
+                "}"
             ));
 
             document.getElementsByTagName("head")[0].appendChild(style);
@@ -401,6 +625,11 @@
             this.gameLoaded = true;
             this.createMenu();
             this.createGuidance();
+            this.updateLandscapeState();
+
+            if (this.isPhoneMode()) {
+                this.createMobileControls();
+            }
 
             if (GTA.NPCManager !== undefined) {
                 game.npcManager = new GTA.NPCManager(game);
@@ -447,12 +676,14 @@
                         "<span>S / Arrow Down: move backward</span>" +
                         "<span>A / D: turn left or right</span>" +
                         "<span>E: enter a nearby car or hijack a moving car</span>" +
+                        "<span>Phone: hold RUN and steer with the arrow buttons</span>" +
                         "<strong>In A Car</strong>" +
                         "<span>W: drive forward</span>" +
                         "<span>A / D: steer</span>" +
                         "<span>R: reverse</span>" +
                         "<span>S: speed boost</span>" +
                         "<span>E: exit the car</span>" +
+                        "<span>Phone: DRIVE, REV, BOOST, E, and arrow buttons</span>" +
                         "<strong>Map And Missions</strong>" +
                         "<span>Click the nav map to expand it</span>" +
                         "<span>Enter the glowing mission marker to reveal submissions</span>" +
@@ -560,7 +791,8 @@
             if (player.vehicle !== null) {
                 this.setGuidance(
                     "Driving mode",
-                    "W forward | A/D steer | R reverse | S boost | E exit"
+                    this.isPhoneMode() ? "DRIVE forward | arrows steer | REV reverse | BOOST speed | E exit" :
+                        "W forward | A/D steer | R reverse | S boost | E exit"
                 );
                 return;
             }
@@ -569,16 +801,163 @@
 
             if (carDistance < 230) {
                 this.setGuidance(
-                    "Press E to enter the car",
-                    "You can also hijack a moving car with E"
+                    this.isPhoneMode() ? "Tap E to enter the car" : "Press E to enter the car",
+                    this.isPhoneMode() ? "You can also hijack a moving car with E" : "You can also hijack a moving car with E"
                 );
                 return;
             }
 
             this.setGuidance(
                 "Find the glowing mission marker",
-                "Enter it to reveal submission assets"
+                this.isPhoneMode() ? "Hold RUN and steer with arrows to search the city" :
+                    "Enter it to reveal submission assets"
             );
+        },
+
+        createMobileControls: function () {
+            var controls,
+                buttons,
+                i,
+                control,
+                self = this;
+
+            if (this.mobileControls !== null) {
+                return;
+            }
+
+            controls = document.createElement("div");
+            controls.id = "missionTouchControls";
+            controls.innerHTML =
+                "<div class=\"touchSteer\">" +
+                    "<button class=\"touchRound\" data-touch=\"left\">&larr;</button>" +
+                    "<button class=\"touchRound\" data-touch=\"right\">&rarr;</button>" +
+                "</div>" +
+                "<div class=\"touchActions\">" +
+                    "<button class=\"touchTall footOnly\" data-touch=\"run\">Run</button>" +
+                    "<button class=\"touchTall carOnly\" data-touch=\"drive\">Drive</button>" +
+                    "<button class=\"touchPill carOnly\" data-touch=\"reverse\">Rev</button>" +
+                    "<button class=\"touchPill carOnly\" data-touch=\"boost\">Boost</button>" +
+                    "<button class=\"touchRound vehicleAction\" data-touch=\"vehicle\">E</button>" +
+                "</div>";
+
+            document.body.appendChild(controls);
+            this.mobileControls = controls;
+            buttons = controls.getElementsByTagName("button");
+
+            for (i = 0; i < buttons.length; i += 1) {
+                control = buttons[i].getAttribute("data-touch");
+
+                if (control === "vehicle") {
+                    this.bindMobileTap(buttons[i]);
+                } else {
+                    this.bindMobileHold(buttons[i], control);
+                }
+            }
+
+            this.mobileControlsTimer = window.setInterval(function () {
+                self.updateMobileControls();
+            }, 180);
+            this.updateMobileControls();
+        },
+
+        bindMobileHold: function (button, control) {
+            var self = this,
+                start = function (event) {
+                    event.preventDefault();
+                    self.setMobileControl(control, true);
+                },
+                end = function (event) {
+                    event.preventDefault();
+                    self.setMobileControl(control, false);
+                };
+
+            if (window.PointerEvent !== undefined) {
+                button.addEventListener("pointerdown", start, false);
+                button.addEventListener("pointerup", end, false);
+                button.addEventListener("pointercancel", end, false);
+                button.addEventListener("pointerleave", end, false);
+            } else {
+                button.addEventListener("touchstart", start, false);
+                button.addEventListener("touchend", end, false);
+                button.addEventListener("touchcancel", end, false);
+                button.addEventListener("mousedown", start, false);
+                button.addEventListener("mouseup", end, false);
+                button.addEventListener("mouseleave", end, false);
+            }
+        },
+
+        bindMobileTap: function (button) {
+            var self = this,
+                tap = function (event) {
+                    event.preventDefault();
+                    self.mobileVehicleTap();
+                };
+
+            if (window.PointerEvent !== undefined) {
+                button.addEventListener("pointerdown", tap, false);
+            } else {
+                button.addEventListener("touchstart", tap, false);
+                button.addEventListener("mousedown", tap, false);
+            }
+        },
+
+        setMobileControl: function (control, active) {
+            var player = this.game && this.game.player ? this.game.player : null;
+
+            if (player === null) {
+                return;
+            }
+
+            if (control === "left") {
+                player.turnLeft = active;
+            } else if (control === "right") {
+                player.turnRight = active;
+            } else if (control === "run" || control === "drive") {
+                player.moveForward = active;
+            } else if (control === "reverse") {
+                player.vehicleReverse = active;
+            } else if (control === "boost") {
+                player.vehicleBoost = active;
+            }
+
+            this.updateMobileControls();
+        },
+
+        mobileVehicleTap: function () {
+            var player = this.game && this.game.player ? this.game.player : null,
+                self = this;
+
+            if (player === null || player.vehicleUseDown) {
+                return;
+            }
+
+            player.moveForward = false;
+            player.vehicleReverse = false;
+            player.vehicleBoost = false;
+            player.vehicleUseDown = true;
+            player.toggleVehicle();
+            this.updateMobileControls();
+
+            window.setTimeout(function () {
+                player.vehicleUseDown = false;
+                self.updateMobileControls();
+            }, 240);
+        },
+
+        updateMobileControls: function () {
+            var player = this.game && this.game.player ? this.game.player : null,
+                vehicleButton;
+
+            if (this.mobileControls === null || player === null) {
+                return;
+            }
+
+            this.mobileControls.className = player.vehicle !== null ? "inVehicle" : "";
+            vehicleButton = this.mobileControls.getElementsByClassName("vehicleAction")[0];
+
+            if (vehicleButton !== undefined) {
+                vehicleButton.innerHTML = player.vehicle !== null ? "Exit" : "E";
+            }
         },
 
         nearestCarDistance: function (playerX, playerY) {

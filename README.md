@@ -24,12 +24,20 @@ The game tracks 94 known submissions in total. Mission items are spread around t
 
 ## Controls
 
+Choose `PC` or `Phone` on the loading screen. Phone mode uses the desktop renderer with touch controls and starts only in landscape.
+
 ### On Foot
 
 - `W` or Arrow Up: move forward
 - `S` or Arrow Down: move backward
 - `A` or Arrow Left: turn left
 - `D` or Arrow Right: turn right
+- `E`: enter a nearby car or hijack a moving car
+
+Phone:
+
+- Left and right arrows: turn
+- `Run`: move Adam forward
 - `E`: enter a nearby car or hijack a moving car
 
 ### In A Car
@@ -40,6 +48,14 @@ The game tracks 94 known submissions in total. Mission items are spread around t
 - `R`: reverse
 - `S`: speed boost
 - `E`: exit the car
+
+Phone:
+
+- Left and right arrows: steer
+- `Drive`: drive forward
+- `Rev`: reverse
+- `Boost`: speed boost
+- `Exit`: leave the car
 
 ### Game UI
 

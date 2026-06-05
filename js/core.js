@@ -82,7 +82,9 @@ GTA.Game = function ( ) {
     this.tileMaterials;
     
 
-    this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1500 );
+    var viewSize = GTA.getGameViewportSize();
+
+    this.camera = new THREE.PerspectiveCamera( 45, viewSize.width / viewSize.height, 1, 1500 );
     this.camera.position.z = 400; //300
     this.camera.position.x =  105*64;
     this.camera.position.y =  -119*64;
@@ -270,14 +272,23 @@ GTA.Game = function ( ) {
     this.gameobjects = [];
   
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    this.renderer.domElement.id = "missionGameCanvas";
+    this.resizeRenderer = function () {
+        var size = GTA.getGameViewportSize();
+
+        this.camera.aspect = size.width / size.height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(size.width, size.height);
+
+    };
+    this.resizeRenderer();
     
     this.renderer.setClearColorHex ( 0x000000, 0 );
     this.renderer.sortObjects = false;
         
     console.log(this);
     window.document.body.appendChild( this.renderer.domElement );
-    
+
  //   window.document.body.appendChild(  GTA.Debug.createPhysicsDebug.call ( this ) );
     
     var _ = this,
@@ -421,6 +432,26 @@ GTA.Rotation = function ( gtaAngle ) {
 };
 
 GTA.SectionSize = 16;
+
+GTA.isPhoneMode = function () {
+    return GTA.Experience !== undefined &&
+        GTA.Experience.isPhoneMode !== undefined &&
+        GTA.Experience.isPhoneMode();
+};
+
+GTA.getGameViewportSize = function () {
+    var viewport = window.visualViewport,
+        width = viewport && viewport.width ? viewport.width : window.innerWidth,
+        height = viewport && viewport.height ? viewport.height : window.innerHeight;
+
+    width = Math.max(320, Math.floor(width || document.documentElement.clientWidth || 800));
+    height = Math.max(320, Math.floor(height || document.documentElement.clientHeight || 600));
+
+    return {
+        width: width,
+        height: height
+    };
+};
 
 GTA.Blocks = [];
 
