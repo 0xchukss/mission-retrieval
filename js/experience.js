@@ -584,11 +584,12 @@
                 "}" +
                 "#missionGuidance .guideKeys{display:block;color:#a4ffb2;font:bold 11px Arial;margin-top:4px;}" +
                 "body.missionPhoneMode #GTADebugPositionData,body.missionPhoneMode .stats{display:none;}" +
-                "body.missionPhoneMode #missionMenuButton{left:10px;bottom:calc(112px + env(safe-area-inset-bottom));padding:8px 11px;}" +
+                "body.missionPhoneMode #missionMenuButton{left:10px;bottom:calc(84px + env(safe-area-inset-bottom));padding:6px 9px;font-size:10px;}" +
                 "body.missionPhoneMode #missionGuidance{" +
-                    "bottom:calc(108px + env(safe-area-inset-bottom));width:calc(100vw - 28px);min-width:0;" +
-                    "max-width:calc(100vw - 28px);font-size:11px;padding:9px 10px;" +
+                    "bottom:calc(82px + env(safe-area-inset-bottom));width:auto;min-width:0;" +
+                    "max-width:360px;font-size:9px;padding:5px 8px;line-height:1.15;" +
                 "}" +
+                "body.missionPhoneMode #missionGuidance .guideKeys{font-size:8px;margin-top:2px;}" +
                 "#missionTouchControls{display:none;font-family:Arial,Helvetica,sans-serif;}" +
                 "body.missionPhoneMode #missionTouchControls{display:block;}" +
                 "#missionTouchControls button{" +

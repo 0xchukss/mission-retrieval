@@ -192,7 +192,33 @@
                 "left:50%;top:50%;right:auto;transform:translate(-50%,-50%);" +
                 "width:536px;max-width:calc(100vw - 32px);z-index:13;padding:12px;" +
             "}" +
-            "#missionRetrievalMap.expanded canvas{width:512px;height:512px;max-width:calc(100vw - 56px);max-height:calc(100vh - 92px);}"
+            "#missionRetrievalMap.expanded canvas{width:512px;height:512px;max-width:calc(100vw - 56px);max-height:calc(100vh - 92px);}" +
+            "body.missionPhoneMode #missionRetrievalHud{" +
+                "left:8px;top:46px;width:220px;font-size:10px;line-height:1.2;" +
+            "}" +
+            "body.missionPhoneMode #missionRetrievalHud .panel{padding:8px;background:rgba(1,8,12,.68);}" +
+            "body.missionPhoneMode #missionRetrievalHud .title{font-size:14px;margin-bottom:1px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .meta{display:none;}" +
+            "body.missionPhoneMode #missionRetrievalHud .missionRow{gap:7px;margin-bottom:6px;}" +
+            "body.missionPhoneMode #missionRetrievalHud canvas{width:42px;height:42px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .missionName{font-size:12px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .missionCount{font-size:10px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .progressBar{height:5px;margin:5px 0;}" +
+            "body.missionPhoneMode #missionRetrievalHud .phase{font-size:10px;margin-top:5px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .symbols{gap:4px;margin-top:6px;max-height:48px;overflow:hidden;}" +
+            "body.missionPhoneMode #missionRetrievalHud .symbol{min-width:20px;height:20px;font-size:15px;}" +
+            "body.missionPhoneMode #missionRetrievalHud .symbol:only-child{display:none;}" +
+            "body.missionPhoneMode #missionRetrievalMap{" +
+                "right:8px;top:8px;width:128px;padding:5px;font-size:9px;background:rgba(1,8,12,.7);" +
+            "}" +
+            "body.missionPhoneMode #missionRetrievalMap .mapTitle{margin-bottom:4px;}" +
+            "body.missionPhoneMode #missionRetrievalMap canvas{width:118px;height:118px;}" +
+            "body.missionPhoneMode #missionRetrievalMap.expanded{" +
+                "width:304px;max-width:calc(100vw - 26px);padding:8px;" +
+            "}" +
+            "body.missionPhoneMode #missionRetrievalMap.expanded canvas{" +
+                "width:288px;height:288px;max-width:calc(100vw - 42px);max-height:calc(100vh - 58px);" +
+            "}"
         ));
 
         document.getElementsByTagName("head")[0].appendChild(style);
