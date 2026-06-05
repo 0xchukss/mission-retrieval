@@ -15,9 +15,11 @@
         footsteps: null,
         crash: null,
         driving: null,
+        footstepsActive: false,
+        drivingActive: false,
+        audioMonitor: null,
         lastFootstep: 0,
         lastCrash: 0,
-        footstepStopTimer: null,
         unlocked: false,
 
         init: function () {
@@ -28,6 +30,7 @@
                 this.driving = this.createAudio(drivingPath, 0.68, true);
             }
 
+            this.startLoopMonitor();
             this.attachUnlockListeners();
         },
 
@@ -40,6 +43,40 @@
             audio.preload = "auto";
 
             return audio;
+        },
+
+        startLoopMonitor: function () {
+            var self = this;
+
+            if (this.audioMonitor !== null) {
+                return;
+            }
+
+            this.audioMonitor = window.setInterval(function () {
+                self.refreshLoop(self.footsteps, self.footstepsActive);
+                self.refreshLoop(self.driving, self.drivingActive);
+            }, 500);
+        },
+
+        refreshLoop: function (audio, active) {
+            if (audio === null) {
+                return;
+            }
+
+            audio.loop = true;
+
+            if (active) {
+                if (audio.paused || audio.ended) {
+                    if (audio.ended) {
+                        audio.currentTime = 0;
+                    }
+
+                    this.safePlay(audio);
+                }
+            } else if (!audio.paused) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
         },
 
         attachUnlockListeners: function () {
@@ -148,19 +185,7 @@
             var now = Date.now();
 
             if (this.footsteps !== null) {
-                window.clearTimeout(this.footstepStopTimer);
-
-                if (this.footsteps.paused) {
-                    this.footsteps.currentTime = 0;
-                    this.safePlay(this.footsteps);
-                }
-
-                this.footstepStopTimer = window.setTimeout(function () {
-                    if (GTA.Audio.footsteps !== null) {
-                        GTA.Audio.footsteps.pause();
-                    }
-                }, 180);
-
+                this.setFootsteps(true);
                 return;
             }
 
@@ -171,6 +196,15 @@
             this.lastFootstep = now;
             this.noise(0.055, 0.075);
             this.tone(95, 0.045, "triangle", 0.035, 65);
+        },
+
+        setFootsteps: function (active) {
+            if (this.footsteps === null) {
+                return;
+            }
+
+            this.footstepsActive = active;
+            this.refreshLoop(this.footsteps, active);
         },
 
         playCrash: function () {
@@ -197,14 +231,8 @@
                 return;
             }
 
-            if (active) {
-                if (this.driving.paused) {
-                    this.driving.currentTime = 0;
-                    this.safePlay(this.driving);
-                }
-            } else {
-                this.driving.pause();
-            }
+            this.drivingActive = active;
+            this.refreshLoop(this.driving, active);
         },
 
         safePlay: function (audio) {

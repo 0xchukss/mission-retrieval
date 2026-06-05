@@ -235,6 +235,11 @@ GTA.Player.prototype.enterVehicle = function (vehicle) {
     if (this.physics.SetActive !== undefined) {
         this.physics.SetActive(false);
     }
+
+    if (GTA.Audio !== undefined) {
+        GTA.Audio.setFootsteps(false);
+        GTA.Audio.setDriving(true);
+    }
 };
 
 GTA.Player.prototype.exitVehicle = function () {
@@ -282,6 +287,11 @@ GTA.Player.prototype.updateVehicle = function (delta) {
     if (vehicle === null || vehicle.physics === undefined) {
         this.vehicle = null;
         this.sprite.visible = true;
+
+        if (GTA.Audio !== undefined) {
+            GTA.Audio.setDriving(false);
+        }
+
         return;
     }
 
@@ -314,7 +324,7 @@ GTA.Player.prototype.updateVehicle = function (delta) {
     }
 
     if (GTA.Audio !== undefined) {
-        GTA.Audio.setDriving(speed !== 0);
+        GTA.Audio.setDriving(true);
     }
 
     velocity = new Box2D.Common.Math.b2Vec2(

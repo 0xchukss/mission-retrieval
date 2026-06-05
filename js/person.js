@@ -134,6 +134,10 @@ GTA.Pedestrian.prototype.movePedestrian = function ( x, y, z ) {
 GTA.Pedestrian.prototype.update = function ( delta ) {
 
     if (this.vehicle !== undefined && this.vehicle !== null && this.updateVehicle !== undefined) {
+        if (this.game !== undefined && this.game.player === this && GTA.Audio !== undefined) {
+            GTA.Audio.setFootsteps(false);
+        }
+
         this.updateVehicle(delta);
         return;
     }
@@ -179,8 +183,8 @@ GTA.Pedestrian.prototype.update = function ( delta ) {
         this.physics.SetLinearVelocity( new Box2D.Common.Math.b2Vec2(  0 ,  0 ) );
     }
 
-    if (movementSpeed > 0 && this.game !== undefined && this.game.player === this && GTA.Audio !== undefined) {
-        GTA.Audio.playFootstep();
+    if (this.game !== undefined && this.game.player === this && GTA.Audio !== undefined) {
+        GTA.Audio.setFootsteps(movementSpeed > 0);
     }
     
     spriteID = (this.weapon * 3) + movementSpeed;
