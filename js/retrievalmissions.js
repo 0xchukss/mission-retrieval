@@ -135,29 +135,29 @@
         style.type = "text/css";
         style.appendChild(document.createTextNode(
             "#missionRetrievalHud{" +
-                "position:absolute;left:12px;top:58px;width:290px;color:#dfffe6;" +
+                "position:absolute;left:10px;top:52px;width:250px;color:#dfffe6;" +
                 "font:12px/1.35 Arial,Helvetica,sans-serif;z-index:5;pointer-events:none;" +
                 "text-shadow:0 0 8px rgba(109,255,133,.75);" +
             "}" +
             "#missionRetrievalHud .panel{" +
                 "background:rgba(1,8,12,.76);border:1px solid rgba(109,255,133,.5);" +
-                "box-shadow:0 0 22px rgba(31,255,91,.22);padding:12px;" +
+                "box-shadow:0 0 22px rgba(31,255,91,.22);padding:10px;" +
             "}" +
             "#missionRetrievalHud .title{" +
-                "font-weight:bold;font-size:18px;text-transform:uppercase;letter-spacing:0;" +
+                "font-weight:bold;font-size:16px;text-transform:uppercase;letter-spacing:0;" +
                 "color:#fff;margin-bottom:2px;" +
             "}" +
-            "#missionRetrievalHud .meta{color:#93ffad;margin-bottom:10px;}" +
-            "#missionRetrievalHud .missionRow{display:flex;align-items:center;gap:10px;margin-bottom:10px;}" +
-            "#missionRetrievalHud canvas{width:64px;height:64px;image-rendering:pixelated;flex:0 0 auto;}" +
-            "#missionRetrievalHud .missionName{font-size:15px;font-weight:bold;color:#fff;text-transform:uppercase;}" +
+            "#missionRetrievalHud .meta{color:#93ffad;margin-bottom:8px;}" +
+            "#missionRetrievalHud .missionRow{display:flex;align-items:center;gap:8px;margin-bottom:8px;}" +
+            "#missionRetrievalHud canvas{width:54px;height:54px;image-rendering:pixelated;flex:0 0 auto;}" +
+            "#missionRetrievalHud .missionName{font-size:13px;font-weight:bold;color:#fff;text-transform:uppercase;}" +
             "#missionRetrievalHud .missionCount{color:#9cfab0;}" +
-            "#missionRetrievalHud .progressBar{height:8px;background:rgba(255,255,255,.12);overflow:hidden;margin:8px 0;}" +
+            "#missionRetrievalHud .progressBar{height:6px;background:rgba(255,255,255,.12);overflow:hidden;margin:7px 0;}" +
             "#missionRetrievalHud .progressBar span{display:block;height:100%;width:0;background:#6dff85;box-shadow:0 0 12px #6dff85;}" +
-            "#missionRetrievalHud .symbols{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}" +
+            "#missionRetrievalHud .symbols{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}" +
             "#missionRetrievalHud .symbol{" +
-                "min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;" +
-                "font:bold 22px/1 Courier New,monospace;color:#152416;border:1px solid rgba(109,255,133,.32);" +
+                "min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;" +
+                "font:bold 19px/1 Courier New,monospace;color:#152416;border:1px solid rgba(109,255,133,.32);" +
                 "background:rgba(109,255,133,.14);" +
             "}" +
             "#missionRetrievalHud .symbol.done{" +
@@ -181,18 +181,18 @@
             "#missionRetrievalLoader.show{display:flex;}" +
             "#missionRetrievalLoader .small{font-size:13px;color:#9cffad;margin-top:10px;}" +
             "#missionRetrievalMap{" +
-                "position:absolute;right:12px;top:12px;width:194px;z-index:12;color:#dfffe6;" +
+                "position:absolute;right:10px;top:10px;width:156px;z-index:12;color:#dfffe6;" +
                 "font:11px/1.2 Arial,Helvetica,sans-serif;text-transform:uppercase;pointer-events:auto;cursor:pointer;" +
-                "background:rgba(1,8,12,.78);border:1px solid rgba(109,255,133,.45);padding:8px;" +
+                "background:rgba(1,8,12,.78);border:1px solid rgba(109,255,133,.45);padding:6px;" +
                 "box-shadow:0 0 22px rgba(31,255,91,.24);" +
             "}" +
-            "#missionRetrievalMap .mapTitle{display:flex;justify-content:space-between;margin-bottom:6px;color:#9cffad;}" +
-            "#missionRetrievalMap canvas{display:block;width:180px;height:180px;image-rendering:pixelated;background:#020608;}" +
+            "#missionRetrievalMap .mapTitle{display:flex;justify-content:space-between;margin-bottom:5px;color:#9cffad;}" +
+            "#missionRetrievalMap canvas{display:block;width:144px;height:144px;image-rendering:pixelated;background:#020608;}" +
             "#missionRetrievalMap.expanded{" +
                 "left:50%;top:50%;right:auto;transform:translate(-50%,-50%);" +
-                "width:536px;max-width:calc(100vw - 32px);z-index:13;padding:12px;" +
+                "width:424px;max-width:calc(100vw - 32px);z-index:13;padding:10px;" +
             "}" +
-            "#missionRetrievalMap.expanded canvas{width:512px;height:512px;max-width:calc(100vw - 56px);max-height:calc(100vh - 92px);}" +
+            "#missionRetrievalMap.expanded canvas{width:404px;height:404px;max-width:calc(100vw - 52px);max-height:calc(100vh - 88px);}" +
             "body.missionPhoneMode #missionRetrievalHud{" +
                 "left:8px;top:46px;width:220px;font-size:10px;line-height:1.2;" +
             "}" +

@@ -584,9 +584,9 @@
                 "}" +
                 "#missionGuidance .guideKeys{display:block;color:#a4ffb2;font:bold 11px Arial;margin-top:4px;}" +
                 "body.missionPhoneMode #GTADebugPositionData,body.missionPhoneMode .stats{display:none;}" +
-                "body.missionPhoneMode #missionMenuButton{left:10px;bottom:calc(84px + env(safe-area-inset-bottom));padding:6px 9px;font-size:10px;}" +
+                "body.missionPhoneMode #missionMenuButton{left:10px;bottom:calc(108px + env(safe-area-inset-bottom));padding:7px 10px;font-size:11px;}" +
                 "body.missionPhoneMode #missionGuidance{" +
-                    "bottom:calc(82px + env(safe-area-inset-bottom));width:auto;min-width:0;" +
+                    "bottom:calc(104px + env(safe-area-inset-bottom));width:auto;min-width:0;" +
                     "max-width:360px;font-size:9px;padding:5px 8px;line-height:1.15;" +
                 "}" +
                 "body.missionPhoneMode #missionGuidance .guideKeys{font-size:8px;margin-top:2px;}" +
@@ -598,11 +598,11 @@
                     "touch-action:none;-webkit-user-select:none;user-select:none;" +
                 "}" +
                 "#missionTouchControls button:active{background:rgba(109,255,133,.26);}" +
-                ".touchSteer{position:fixed;left:12px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:10px;}" +
-                ".touchActions{position:fixed;right:12px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:9px;align-items:flex-end;}" +
-                ".touchRound{width:58px;height:58px;border-radius:50%;font-size:24px;}" +
-                ".touchPill{height:56px;min-width:66px;border-radius:28px;padding:0 15px;}" +
-                ".touchTall{height:68px;min-width:82px;border-radius:34px;}" +
+                ".touchSteer{position:fixed;left:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:12px;}" +
+                ".touchActions{position:fixed;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:22;display:flex;gap:11px;align-items:flex-end;}" +
+                ".touchRound{width:72px;height:72px;border-radius:50%;font-size:28px;}" +
+                ".touchPill{height:68px;min-width:78px;border-radius:34px;padding:0 17px;}" +
+                ".touchTall{height:82px;min-width:96px;border-radius:41px;font-size:14px;}" +
                 "#missionTouchControls .carOnly{display:none;}" +
                 "#missionTouchControls.inVehicle .footOnly{display:none;}" +
                 "#missionTouchControls.inVehicle .carOnly{display:inline-block;}" +
@@ -612,9 +612,9 @@
                     ".bootTitle{font-size:32px;}" +
                     ".platformSelect{flex-wrap:wrap;}" +
                     ".platformSelect button{min-width:104px;}" +
-                    ".touchRound{width:54px;height:54px;}" +
-                    ".touchPill{height:52px;min-width:58px;padding:0 12px;font-size:11px;}" +
-                    ".touchTall{height:62px;min-width:74px;}" +
+                    ".touchRound{width:64px;height:64px;}" +
+                    ".touchPill{height:62px;min-width:68px;padding:0 13px;font-size:11px;}" +
+                    ".touchTall{height:74px;min-width:84px;}" +
                 "}"
             ));
 
